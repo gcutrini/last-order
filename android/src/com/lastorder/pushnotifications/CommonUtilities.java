@@ -1,5 +1,7 @@
 package com.lastorder.pushnotifications;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.content.Intent;
  
@@ -20,6 +22,8 @@ public final class CommonUtilities {
             "com.androidhive.pushnotifications.DISPLAY_MESSAGE";
  
     static final String EXTRA_MESSAGE = "message";
+    
+    static final String PROMOTIONS = "promotions";
  
     /**
      * Notifies UI to display a message.
@@ -30,9 +34,10 @@ public final class CommonUtilities {
      * @param context application's context.
      * @param message message to be displayed.
      */
-    static void displayMessage(Context context, String message) {
+    static void displayMessage(Context context, String message, ArrayList<Promotion> promotions) {
         Intent intent = new Intent(DISPLAY_MESSAGE_ACTION);
         intent.putExtra(EXTRA_MESSAGE, message);
+        intent.putExtra(PROMOTIONS, promotions);
         context.sendBroadcast(intent);
     }
 }

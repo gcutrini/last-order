@@ -1,9 +1,15 @@
 package com.lastorder.pushnotifications;
+import java.util.ArrayList;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
  
 import com.google.android.gcm.GCMBaseIntentService;
@@ -14,7 +20,9 @@ import static com.lastorder.pushnotifications.CommonUtilities.displayMessage;
 public class GCMIntentService extends GCMBaseIntentService {
  
     private static final String TAG = "GCMIntentService";
- 
+    
+    private ArrayList<Promotion> promotions = new ArrayList<Promotion>();
+    
     public GCMIntentService() {
         super(SENDER_ID);
     }
@@ -25,7 +33,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     @Override
     protected void onRegistered(Context context, String registrationId) {
         Log.i(TAG, "Device registered: regId = " + registrationId);
-        displayMessage(context, "Your device registred with GCM");
+        displayMessage(context, "Your device registred with GCM", null);
         Log.d("NAME", MainActivity.name);
         ServerUtilities.register(context, MainActivity.name, MainActivity.email, registrationId);
     }
@@ -36,7 +44,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     @Override
     protected void onUnregistered(Context context, String registrationId) {
         Log.i(TAG, "Device unregistered");
-        displayMessage(context, getString(R.string.gcm_unregistered));
+        displayMessage(context, getString(R.string.gcm_unregistered), null);
         ServerUtilities.unregister(context, registrationId);
     }
  
@@ -47,12 +55,25 @@ public class GCMIntentService extends GCMBaseIntentService {
     protected void onMessage(Context context, Intent intent) {
         Log.i(TAG, "Received message");
         String message = intent.getExtras().getString("price");
- 
-        displayMessage(context, message);
-        // notifies user
-        generateNotification(context, message);
+        try {
+			JSONObject x = new JSONObject(message);
+			
+	        Promotion prom = new Promotion();
+	        prom.venue = x.getString("venue");
+	        prom.name = x.getString("name");
+	        prom.description = x.getString("description");
+	        
+	        promotions.add(prom);
+	        
+	        displayMessage(context, message, promotions);
+	        // notifies user
+	        generateNotification(context, message);
+	    
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
- 
     /**
      * Method called on receiving a deleted message
      * */
@@ -60,7 +81,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     protected void onDeletedMessages(Context context, int total) {
         Log.i(TAG, "Received deleted messages notification");
         String message = getString(R.string.gcm_deleted, total);
-        displayMessage(context, message);
+        displayMessage(context, message, null);
         // notifies user
         generateNotification(context, message);
     }
@@ -71,7 +92,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     @Override
     public void onError(Context context, String errorId) {
         Log.i(TAG, "Received error: " + errorId);
-        displayMessage(context, getString(R.string.gcm_error, errorId));
+        displayMessage(context, getString(R.string.gcm_error, errorId), null);
     }
  
     @Override
@@ -79,7 +100,7 @@ public class GCMIntentService extends GCMBaseIntentService {
         // log message
         Log.i(TAG, "Received recoverable error: " + errorId);
         displayMessage(context, getString(R.string.gcm_recoverable_error,
-                errorId));
+                errorId), null);
         return super.onRecoverableError(context, errorId);
     }
  
@@ -112,5 +133,6 @@ public class GCMIntentService extends GCMBaseIntentService {
         notificationManager.notify(0, notification);     
  
     }
+    
  
 }

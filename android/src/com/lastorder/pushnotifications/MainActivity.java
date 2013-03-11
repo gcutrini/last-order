@@ -2,7 +2,11 @@ package com.lastorder.pushnotifications;
 
 import static com.lastorder.pushnotifications.CommonUtilities.DISPLAY_MESSAGE_ACTION;
 import static com.lastorder.pushnotifications.CommonUtilities.EXTRA_MESSAGE;
+import static com.lastorder.pushnotifications.CommonUtilities.PROMOTIONS;
 import static com.lastorder.pushnotifications.CommonUtilities.SENDER_ID;
+
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,14 +15,14 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
- 
+
 import com.google.android.gcm.GCMRegistrar;
  
 public class MainActivity extends Activity {
     // label to display gcm messages
-    TextView lblMessage;
  
     // Asyntask
     AsyncTask<Void, Void, Void> mRegisterTask;
@@ -31,6 +35,8 @@ public class MainActivity extends Activity {
  
     public static String name;
     public static String email;
+    private ListView promotionList;
+    private ArrayList<Promotion> promotions = new ArrayList<Promotion>();
  
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,8 +68,8 @@ public class MainActivity extends Activity {
         // while developing the app, then uncomment it when it's ready.
         GCMRegistrar.checkManifest(this);
  
-        lblMessage = (TextView) findViewById(R.id.lblMessage);
- 
+        promotionList = (ListView)findViewById(R.id.lvPromotions);
+        promotionList.setAdapter(new PromotionListAdapter(promotions, this));
         registerReceiver(mHandleMessageReceiver, new IntentFilter(
                 DISPLAY_MESSAGE_ACTION));
  
@@ -112,6 +118,7 @@ public class MainActivity extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String newMessage = intent.getExtras().getString(EXTRA_MESSAGE);
+            promotions = (ArrayList<Promotion>) intent.getExtras().getSerializable(PROMOTIONS);
             // Waking up mobile if it is sleeping
             WakeLocker.acquire(getApplicationContext());
  
@@ -120,9 +127,9 @@ public class MainActivity extends Activity {
              * depending upon your app requirement
              * For now i am just displaying it on the screen
              * */
- 
+
+            promotionList.setAdapter(new PromotionListAdapter(promotions, context));
             // Showing received message
-            lblMessage.append(newMessage + "\n");
             Toast.makeText(getApplicationContext(), "New Message: " + newMessage, Toast.LENGTH_LONG).show();
  
             // Releasing wake lock
