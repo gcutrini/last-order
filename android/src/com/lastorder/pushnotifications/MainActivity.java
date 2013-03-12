@@ -1,9 +1,8 @@
 package com.lastorder.pushnotifications;
 
 import static com.lastorder.pushnotifications.CommonUtilities.DISPLAY_MESSAGE_ACTION;
-import static com.lastorder.pushnotifications.CommonUtilities.EXTRA_MESSAGE;
-import static com.lastorder.pushnotifications.CommonUtilities.PROMOTIONS;
 import static com.lastorder.pushnotifications.CommonUtilities.SENDER_ID;
+import static com.lastorder.pushnotifications.CommonUtilities.EXTRA_MESSAGE;
 
 import java.util.ArrayList;
 
@@ -12,16 +11,19 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gcm.GCMRegistrar;
  
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements LocationListener {
     // label to display gcm messages
  
     // Asyntask
@@ -38,7 +40,10 @@ public class MainActivity extends Activity {
     private ListView promotionList;
     private ArrayList<Promotion> promotions = new ArrayList<Promotion>();
     LastOrderApplication application;
- 
+    private LocationManager locationManager;
+    private String provider;
+    private Location location;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +76,7 @@ public class MainActivity extends Activity {
  
         promotionList = (ListView)findViewById(R.id.lvPromotions);
         promotions = application.dataManager.selectAllPromotion();
-        promotionList.setAdapter(new PromotionListAdapter(promotions, this));
+        promotionList.setAdapter(new PromotionListAdapter(promotions, this, location));
         registerReceiver(mHandleMessageReceiver, new IntentFilter(
                 DISPLAY_MESSAGE_ACTION));
  
@@ -111,6 +116,19 @@ public class MainActivity extends Activity {
                 mRegisterTask.execute(null, null, null);
             }
         }
+        
+        // Get the location manager
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        // Define the criteria how to select the locatioin provider -> use
+        // default
+        Criteria criteria = new Criteria();
+        provider = locationManager.getBestProvider(criteria, false);
+        Location location = locationManager.getLastKnownLocation(provider);
+
+        // Initialize the location fields
+          System.out.println("Provider " + provider + " has been selected.");
+          onLocationChanged(location);
+        
     }      
  
     /**
@@ -130,7 +148,7 @@ public class MainActivity extends Activity {
              * For now i am just displaying it on the screen
              * */
 
-            promotionList.setAdapter(new PromotionListAdapter(promotions, context));
+            promotionList.setAdapter(new PromotionListAdapter(promotions, context, location));
             // Showing received message
             Toast.makeText(getApplicationContext(), "New Message: " + newMessage, Toast.LENGTH_LONG).show();
  
@@ -153,7 +171,58 @@ public class MainActivity extends Activity {
         super.onDestroy();
     }
  
+
+
+
+/* Request updates at startup */
+@Override
+protected void onResume() {
+  super.onResume();
+  locationManager.requestLocationUpdates(provider, 400, 1, this);
 }
+
+/* Remove the locationlistener updates when Activity is paused */
+@Override
+protected void onPause() {
+  super.onPause();
+  locationManager.removeUpdates(this);
+}
+
+@Override
+public void onLocationChanged(Location location) {
+	 promotionList.setAdapter(new PromotionListAdapter(promotions, this, location));
+
+}
+
+
+
+
+@Override
+public void onProviderDisabled(String provider) {
+	// TODO Auto-generated method stub
+	
+}
+
+
+
+
+@Override
+public void onProviderEnabled(String provider) {
+	// TODO Auto-generated method stub
+	
+}
+
+
+
+
+@Override
+public void onStatusChanged(String provider, int status, Bundle extras) {
+	// TODO Auto-generated method stub
+	
+}
+
+}
+
 /*import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;

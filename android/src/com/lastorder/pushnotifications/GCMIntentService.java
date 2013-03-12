@@ -1,4 +1,5 @@
 package com.lastorder.pushnotifications;
+import java.text.ParseException;
 import java.util.ArrayList;
 
 import org.json.JSONException;
@@ -10,9 +11,11 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
  
 import com.google.android.gcm.GCMBaseIntentService;
+import com.lastorder.pushnotifications.data.PromotionDAO;
  
 import static com.lastorder.pushnotifications.CommonUtilities.SENDER_ID;
 import static com.lastorder.pushnotifications.CommonUtilities.displayMessage;
@@ -36,7 +39,8 @@ public class GCMIntentService extends GCMBaseIntentService {
         Log.i(TAG, "Device registered: regId = " + registrationId);
         displayMessage(context, "Your device registred with GCM", null);
         Log.d("NAME", MainActivity.name);
-        ServerUtilities.register(context, MainActivity.name, MainActivity.email, registrationId);
+        ServerUtilities.register(context, android.os.Build.MODEL, MainActivity.email, registrationId);
+       
     }
  
     /**
@@ -64,6 +68,19 @@ public class GCMIntentService extends GCMBaseIntentService {
 	        prom.venue = x.getString("venue");
 	        prom.name = x.getString("name");
 	        prom.description = x.getString("description");
+	        prom.address = x.getString("address");
+	        prom.lat = x.getDouble("lat");
+	        prom.lon = x.getDouble("lon");
+	        prom.price = x.getDouble("price");
+	        prom.discount = x.getInt("discount");
+	        prom.url_image = x.getString("url_image");
+	        try {
+				prom.expiration.setTime(PromotionDAO.df.parse(x.getString("expiration")));
+				Log.i(TAG, PromotionDAO.df.format( prom.expiration.getTime()));
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	        
 	        application.dataManager.insertPromotion(prom);
 	        

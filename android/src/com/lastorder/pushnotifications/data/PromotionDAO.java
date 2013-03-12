@@ -16,8 +16,8 @@ import com.lastorder.pushnotifications.Promotion;
 
 public class PromotionDAO implements DAO<Promotion> {
 	
-	private static final String dateFormat = "yyyy MM dd HH:mm:ss Z";
-	DateFormat df = new SimpleDateFormat(dateFormat);
+	private static final String dateFormat = "yyyy MM dd HH:mm:ss";
+	public static final DateFormat df = new SimpleDateFormat(dateFormat);
 	private SQLiteStatement promotionInsertStmt;
 	private static final String promotion_INSERT = 
 		"insert into " + DataConstants.TABLE_PROMOTIONS + "(" + DataConstants.VENUE + "," + DataConstants.NAME + "," + DataConstants.DESCRIPTION + 
@@ -126,7 +126,7 @@ public class PromotionDAO implements DAO<Promotion> {
 			a.discount = (c.getInt(4));
 			a.price = (Long.parseLong(c.getString(5)));
 			try {
-				a.expiration.getInstance().setTime(df.parse(c.getString(6)));
+				a.expiration.setTime(df.parse(c.getString(6)));
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -163,7 +163,7 @@ public class PromotionDAO implements DAO<Promotion> {
 				a.price = (Long.parseLong(c.getString(5)));
 				} catch(NumberFormatException e) { }
 				try {
-					a.expiration.getInstance().setTime(df.parse(c.getString(6)));
+					a.expiration.setTime(df.parse(c.getString(6)));
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -192,7 +192,7 @@ public class PromotionDAO implements DAO<Promotion> {
 		promotionInsertStmt.bindString(3, entity.description);
 		promotionInsertStmt.bindLong(4, entity.discount);
 		promotionInsertStmt.bindString(5, ((Double)entity.price).toString());
-		promotionInsertStmt.bindString(6, entity.expiration.toString());
+		promotionInsertStmt.bindString(6, df.format(entity.expiration.getTime()));
 		promotionInsertStmt.bindString(7, entity.address);
 		promotionInsertStmt.bindString(8, ((Double)entity.lat).toString());
 		promotionInsertStmt.bindString(9, ((Double)entity.lon).toString());
@@ -211,7 +211,6 @@ public class PromotionDAO implements DAO<Promotion> {
 				throw new IllegalArgumentException("Cannot update login that does not already exist.");
 			}
 			db.beginTransaction();
-			
 			try {
 			final ContentValues values = new ContentValues();
 			values.put(DataConstants.VENUE, entity.venue);
@@ -219,7 +218,7 @@ public class PromotionDAO implements DAO<Promotion> {
 			values.put(DataConstants.DESCRIPTION, entity.description);
 			values.put(DataConstants.DISCOUNT, entity.discount);
 			values.put(DataConstants.PRICE, ((Double)entity.price).toString());
-			values.put(DataConstants.EXPIRATION, entity.expiration.toString());
+			values.put(DataConstants.EXPIRATION, df.format(entity.expiration.getTime()));
 			values.put(DataConstants.ADDRESS, entity.address);
 			values.put(DataConstants.LAT, ((Double)entity.lat).toString());
 			values.put(DataConstants.LON, ((Double)entity.lon).toString());
