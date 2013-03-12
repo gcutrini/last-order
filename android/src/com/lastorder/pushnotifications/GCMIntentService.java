@@ -23,6 +23,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     
     private ArrayList<Promotion> promotions = new ArrayList<Promotion>();
     
+    LastOrderApplication application;
     public GCMIntentService() {
         super(SENDER_ID);
     }
@@ -55,6 +56,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     protected void onMessage(Context context, Intent intent) {
         Log.i(TAG, "Received message");
         String message = intent.getExtras().getString("price");
+        application = (LastOrderApplication) getApplication();
         try {
 			JSONObject x = new JSONObject(message);
 			
@@ -62,6 +64,9 @@ public class GCMIntentService extends GCMBaseIntentService {
 	        prom.venue = x.getString("venue");
 	        prom.name = x.getString("name");
 	        prom.description = x.getString("description");
+	        
+	        application.dataManager.insertPromotion(prom);
+	        
 	        
 	        promotions.add(prom);
 	        

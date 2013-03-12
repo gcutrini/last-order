@@ -16,7 +16,7 @@ import com.lastorder.pushnotifications.Promotion;
 
 public class PromotionDAO implements DAO<Promotion> {
 	
-	private static final String dateFormat = "YYYY mm dd hh:mm:ss Z";
+	private static final String dateFormat = "yyyy MM dd HH:mm:ss Z";
 	DateFormat df = new SimpleDateFormat(dateFormat);
 	private SQLiteStatement promotionInsertStmt;
 	private static final String promotion_INSERT = 
@@ -48,6 +48,8 @@ public class PromotionDAO implements DAO<Promotion> {
 		sb.append(DataConstants.PRICE + " TEXT,");
 		sb.append(DataConstants.EXPIRATION + " DATE,");
 		sb.append(DataConstants.ADDRESS + " TEXT,");
+		sb.append(DataConstants.LAT + " TEXT,");
+		sb.append(DataConstants.LON + " TEXT,");
 		sb.append(DataConstants.URL_IMAGE + " TEXT");
 		sb.append(");");
 		db.execSQL(sb.toString());
@@ -157,7 +159,9 @@ public class PromotionDAO implements DAO<Promotion> {
 				a.name = (c.getString(2));
 				a.description = (c.getString(3));
 				a.discount = (c.getInt(4));
+				try {
 				a.price = (Long.parseLong(c.getString(5)));
+				} catch(NumberFormatException e) { }
 				try {
 					a.expiration.getInstance().setTime(df.parse(c.getString(6)));
 				} catch (ParseException e) {

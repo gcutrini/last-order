@@ -18,7 +18,7 @@ import android.util.Log;
  */
 public class DataManager {
 
-   public static final int DATABASE_VERSION = 1;
+   public static final int DATABASE_VERSION = 2;
 
    private static Context context;
 

@@ -37,6 +37,7 @@ public class MainActivity extends Activity {
     public static String email;
     private ListView promotionList;
     private ArrayList<Promotion> promotions = new ArrayList<Promotion>();
+    LastOrderApplication application;
  
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,7 +55,7 @@ public class MainActivity extends Activity {
             // stop executing code by return
             return;
         }
- 
+        application = (LastOrderApplication) getApplication();
         // Getting name, email from intent
         Intent i = getIntent();
  
@@ -69,6 +70,7 @@ public class MainActivity extends Activity {
         GCMRegistrar.checkManifest(this);
  
         promotionList = (ListView)findViewById(R.id.lvPromotions);
+        promotions = application.dataManager.selectAllPromotion();
         promotionList.setAdapter(new PromotionListAdapter(promotions, this));
         registerReceiver(mHandleMessageReceiver, new IntentFilter(
                 DISPLAY_MESSAGE_ACTION));
@@ -118,7 +120,7 @@ public class MainActivity extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String newMessage = intent.getExtras().getString(EXTRA_MESSAGE);
-            promotions = (ArrayList<Promotion>) intent.getExtras().getSerializable(PROMOTIONS);
+            promotions = application.dataManager.selectAllPromotion();
             // Waking up mobile if it is sleeping
             WakeLocker.acquire(getApplicationContext());
  
