@@ -16,10 +16,10 @@ public final class CommonUtilities {
     /**
      * Tag used on log messages.
      */
-    static final String TAG = "AndroidHive GCM";
+    static final String TAG = "LastOrder GCM";
  
     static final String DISPLAY_MESSAGE_ACTION =
-            "com.androidhive.pushnotifications.DISPLAY_MESSAGE";
+            "com.lastorder.pushnotifications.DISPLAY_MESSAGE";
  
     static final String EXTRA_MESSAGE = "message";
     
