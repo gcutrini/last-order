@@ -148,7 +148,7 @@ public class MainActivity extends Activity implements LocationListener {
              * For now i am just displaying it on the screen
              * */
 
-            //promotionList.setAdapter(new PromotionListAdapter(promotions, context, location));
+            promotionList.setAdapter(new PromotionListAdapter(promotions, context, location != null ? location : locationManager.getLastKnownLocation(provider)));
             // Showing received message
             //Toast.makeText(getApplicationContext(), "New Message: " + newMessage, Toast.LENGTH_LONG).show();
  
@@ -189,7 +189,8 @@ protected void onPause() {
 }
 
 @Override
-public void onLocationChanged(Location location) {
+public void onLocationChanged(Location loc) {
+	 location = loc;
 	 promotionList.setAdapter(new PromotionListAdapter(promotions, this, location));
 
 }
