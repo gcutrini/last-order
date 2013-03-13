@@ -148,9 +148,9 @@ public class MainActivity extends Activity implements LocationListener {
              * For now i am just displaying it on the screen
              * */
 
-            promotionList.setAdapter(new PromotionListAdapter(promotions, context, location));
+            //promotionList.setAdapter(new PromotionListAdapter(promotions, context, location));
             // Showing received message
-            Toast.makeText(getApplicationContext(), "New Message: " + newMessage, Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(), "New Message: " + newMessage, Toast.LENGTH_LONG).show();
  
             // Releasing wake lock
             WakeLocker.release();

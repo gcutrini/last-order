@@ -69,7 +69,7 @@ public class PromotionDAO implements DAO<Promotion> {
 				a.name = (c.getString(2));
 				a.description = (c.getString(3));
 				a.discount = (c.getInt(4));
-				a.price = (Long.parseLong(c.getString(5)));
+				a.price = (Double.parseDouble(c.getString(5)));
 				try {
 					a.expiration.getInstance().setTime(df.parse(c.getString(6)));
 				} catch (ParseException e) {
@@ -124,7 +124,7 @@ public class PromotionDAO implements DAO<Promotion> {
 			a.name = (c.getString(2));
 			a.description = (c.getString(3));
 			a.discount = (c.getInt(4));
-			a.price = (Long.parseLong(c.getString(5)));
+			a.price = (Double.parseDouble(c.getString(5)));
 			try {
 				a.expiration.setTime(df.parse(c.getString(6)));
 			} catch (ParseException e) {
@@ -160,7 +160,7 @@ public class PromotionDAO implements DAO<Promotion> {
 				a.description = (c.getString(3));
 				a.discount = (c.getInt(4));
 				try {
-				a.price = (Long.parseLong(c.getString(5)));
+				a.price = (Double.parseDouble(c.getString(5)));
 				} catch(NumberFormatException e) { }
 				try {
 					a.expiration.setTime(df.parse(c.getString(6)));
@@ -191,11 +191,11 @@ public class PromotionDAO implements DAO<Promotion> {
 		promotionInsertStmt.bindString(2, entity.name);
 		promotionInsertStmt.bindString(3, entity.description);
 		promotionInsertStmt.bindLong(4, entity.discount);
-		promotionInsertStmt.bindString(5, ((Double)entity.price).toString());
+		promotionInsertStmt.bindString(5, String.valueOf((double)entity.price));
 		promotionInsertStmt.bindString(6, df.format(entity.expiration.getTime()));
 		promotionInsertStmt.bindString(7, entity.address);
-		promotionInsertStmt.bindString(8, ((Double)entity.lat).toString());
-		promotionInsertStmt.bindString(9, ((Double)entity.lon).toString());
+		promotionInsertStmt.bindString(8, String.valueOf((double)entity.lat));
+		promotionInsertStmt.bindString(9, String.valueOf((double)entity.lon));
 		promotionInsertStmt.bindString(10, entity.url_image);
 		
 		return promotionInsertStmt.executeInsert();
