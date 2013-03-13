@@ -2,6 +2,9 @@ package com.lastorder.pushnotifications;
 
 import static com.lastorder.pushnotifications.CommonUtilities.SENDER_ID;
 import static com.lastorder.pushnotifications.CommonUtilities.SERVER_URL;
+
+import com.google.android.gcm.GCMRegistrar;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -49,40 +52,49 @@ public class RegisterActivity extends Activity {
             // stop executing code by return
              return;
         }
- 
-        txtName = (EditText) findViewById(R.id.txtName);
-        txtEmail = (EditText) findViewById(R.id.txtEmail);
-        btnRegister = (Button) findViewById(R.id.btnRegister);
- 
-        /*
-         * Click event on Register button
-         * */
-        btnRegister.setOnClickListener(new View.OnClickListener() {
- 
-            @Override
-            public void onClick(View arg0) {
-                // Read EditText dat
-                String name = txtName.getText().toString();
-                String email = txtEmail.getText().toString();
- 
-                // Check if user filled the form
-                if(name.trim().length() > 0 && email.trim().length() > 0){
-                    // Launch Main Activity
-                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
- 
-                    // Registering user on our server
-                    // Sending registraiton details to MainActivity
-                    i.putExtra("name", name);
-                    i.putExtra("email", email);
-                    startActivity(i);
-                    finish();
-                }else{
-                    // user doen't filled that data
-                    // ask him to fill the form
-                    alert.showAlertDialog(RegisterActivity.this, "Registration Error!", "Please enter your details", false);
-                }
-            }
-        });
+        
+        final String regId = GCMRegistrar.getRegistrationId(this);
+        
+        // Check if regid already presents
+        if (regId.equals("")) {
+	        txtName = (EditText) findViewById(R.id.txtName);
+	        txtEmail = (EditText) findViewById(R.id.txtEmail);
+	        btnRegister = (Button) findViewById(R.id.btnRegister);
+	 
+	        /*
+	         * Click event on Register button
+	         * */
+	        btnRegister.setOnClickListener(new View.OnClickListener() {
+	 
+	            @Override
+	            public void onClick(View arg0) {
+	                // Read EditText dat
+	                String name = txtName.getText().toString();
+	                String email = txtEmail.getText().toString();
+	 
+	                // Check if user filled the form
+	                if(name.trim().length() > 0 && email.trim().length() > 0){
+	                    // Launch Main Activity
+	                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
+	 
+	                    // Registering user on our server
+	                    // Sending registraiton details to MainActivity
+	                    i.putExtra("name", name);
+	                    i.putExtra("email", email);
+	                    startActivity(i);
+	                    finish();
+	                }else{
+	                    // user doen't filled that data
+	                    // ask him to fill the form
+	                    alert.showAlertDialog(RegisterActivity.this, "Registration Error!", "Please enter your details", false);
+	                }
+	            }
+	        });
+        } else {
+       	 	Intent i = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(i);
+            finish();
+       }
     }
  
 }
