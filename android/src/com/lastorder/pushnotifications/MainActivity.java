@@ -18,6 +18,7 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -76,7 +77,6 @@ public class MainActivity extends Activity implements LocationListener {
  
         promotionList = (ListView)findViewById(R.id.lvPromotions);
         promotions = application.dataManager.selectAllPromotion();
-        promotionList.setAdapter(new PromotionListAdapter(promotions, this, location));
         registerReceiver(mHandleMessageReceiver, new IntentFilter(
                 DISPLAY_MESSAGE_ACTION));
  
@@ -123,8 +123,9 @@ public class MainActivity extends Activity implements LocationListener {
         // default
         Criteria criteria = new Criteria();
         provider = locationManager.getBestProvider(criteria, false);
-        Location location = locationManager.getLastKnownLocation(provider);
+        location = locationManager.getLastKnownLocation(provider);
 
+        promotionList.setAdapter(new PromotionListAdapter(promotions, this, location));
         // Initialize the location fields
           System.out.println("Provider " + provider + " has been selected.");
           onLocationChanged(location);
@@ -141,14 +142,14 @@ public class MainActivity extends Activity implements LocationListener {
             promotions = application.dataManager.selectAllPromotion();
             // Waking up mobile if it is sleeping
             WakeLocker.acquire(getApplicationContext());
- 
+            
             /**
              * Take appropriate action on this message
              * depending upon your app requirement
              * For now i am just displaying it on the screen
              * */
-
-            promotionList.setAdapter(new PromotionListAdapter(promotions, context, location != null ? location : locationManager.getLastKnownLocation(provider)));
+            ((PromotionListAdapter)promotionList.getAdapter()).updatePromotions(promotions);
+            //promotionList.setAdapter(new PromotionListAdapter(promotions, context, location != null ? location : locationManager.getLastKnownLocation(provider)));
             // Showing received message
             //Toast.makeText(getApplicationContext(), "New Message: " + newMessage, Toast.LENGTH_LONG).show();
  
@@ -191,7 +192,8 @@ protected void onPause() {
 @Override
 public void onLocationChanged(Location loc) {
 	 location = loc;
-	 promotionList.setAdapter(new PromotionListAdapter(promotions, this, location));
+	 ((PromotionListAdapter)promotionList.getAdapter()).updateLocation(location);
+	 //promotionList.setAdapter(new PromotionListAdapter(promotions, this, location));
 
 }
 

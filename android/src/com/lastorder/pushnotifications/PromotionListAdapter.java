@@ -1,18 +1,20 @@
 package com.lastorder.pushnotifications;
 
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 
-import com.lastorder.pushnotifications.data.PromotionDAO;
+import com.lastorder.pushnotifications.data.ImageDownloader;
 
 import android.content.Context;
 import android.location.Location;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class PromotionListAdapter extends BaseAdapter {
@@ -21,12 +23,17 @@ public class PromotionListAdapter extends BaseAdapter {
 	private LayoutInflater inflater;
 	private Context context;
 	private Location myLocation;
-	
+	private long mStartTime;
+	private ImageDownloader imageDownloader;
 	public PromotionListAdapter(ArrayList<Promotion> promos, Context c, Location myLoc) {
 		promotions = promos;
 		context = c;
 		inflater = LayoutInflater.from(context);
 		myLocation = myLoc;
+		mStartTime = System.currentTimeMillis();
+		mHandler.removeCallbacks(mUpdateTimeTask);
+		mHandler.postDelayed(mUpdateTimeTask, 1000);
+		imageDownloader = new ImageDownloader();
 	}
 	@Override
 	public int getCount() {
@@ -63,6 +70,7 @@ public class PromotionListAdapter extends BaseAdapter {
 			holder.distance = (TextView)convertView.findViewById(R.id.distance);
 			holder.expiration = (TextView)convertView.findViewById(R.id.expiration);
 			holder.price = (TextView)convertView.findViewById(R.id.price);
+			holder.bar = (ProgressBar)convertView.findViewById(R.id.progress);
 			
 			convertView.setTag(holder);
 		} else {
@@ -75,7 +83,8 @@ public class PromotionListAdapter extends BaseAdapter {
 		holder.address.setText(promotions.get(position).address);
 		holder.discount.setText(promotions.get(position).discount + "%");
 		holder.expiration.setText(DateUtils.formatElapsedTime((promotions.get(position).expiration.getTimeInMillis() - System.currentTimeMillis())/1000));
-		holder.image_url.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_launcher));
+		
+		imageDownloader.download(promotions.get(position).url_image, holder.image_url, context, holder.bar);
 		holder.price.setText("$"+promotions.get(position).price);
 		Location rest =  new Location("");
 		rest.setLatitude(promotions.get(position).lat);
@@ -95,7 +104,32 @@ public class PromotionListAdapter extends BaseAdapter {
 		TextView price;
 		TextView address;
 		TextView expiration;
+		ProgressBar bar;
 		
 	}
+	
+	@Override
+	public void notifyDataSetChanged() {
+		super.notifyDataSetChanged();
+	}
+	
+	public void updateLocation(Location loc) {
+		myLocation = loc;
+		notifyDataSetChanged();
+	}
+	
+	public void updatePromotions(ArrayList<Promotion> prom) {
+		promotions = prom;
+		notifyDataSetChanged();
+	}
+	private Handler mHandler = new Handler();
+	
+	private Runnable mUpdateTimeTask = new Runnable() {
+		   public void run() {
+		       notifyDataSetChanged();
+		     
+		       mHandler.postDelayed(mUpdateTimeTask,1000);
+		   }
+		};
 
 }
