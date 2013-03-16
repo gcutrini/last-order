@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preference-headers
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+ 
+<header android:fragment="com.lastorder.pushnotifications.SetPreferenceActivity$PrefsFragment"
+    android:icon="@android:drawable/ic_dialog_map"
+    android:title="Filter by distance" >
+    <extra android:name="pref-resource" android:value="app_prefs_cat1" />
+</header>        
+ 
+
+ 
+</preference-headers>

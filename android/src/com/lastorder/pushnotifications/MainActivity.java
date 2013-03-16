@@ -5,24 +5,30 @@ import static com.lastorder.pushnotifications.CommonUtilities.SENDER_ID;
 import static com.lastorder.pushnotifications.CommonUtilities.EXTRA_MESSAGE;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gcm.GCMRegistrar;
+import com.lastorder.pushnotifications.data.MyComparator;
  
 public class MainActivity extends Activity implements LocationListener {
     // label to display gcm messages
@@ -74,11 +80,10 @@ public class MainActivity extends Activity implements LocationListener {
         // Make sure the manifest was properly set - comment out this line
         // while developing the app, then uncomment it when it's ready.
         GCMRegistrar.checkManifest(this);
- 
+        
+        loadPref();
+        
         promotionList = (ListView)findViewById(R.id.lvPromotions);
-        promotions = application.dataManager.selectAllPromotion();
-        registerReceiver(mHandleMessageReceiver, new IntentFilter(
-                DISPLAY_MESSAGE_ACTION));
  
         // Get GCM registration id
         final String regId = GCMRegistrar.getRegistrationId(this);
@@ -125,11 +130,15 @@ public class MainActivity extends Activity implements LocationListener {
         provider = locationManager.getBestProvider(criteria, false);
         location = locationManager.getLastKnownLocation(provider);
 
+        promotions = removeExpiredPromsSortAndFilter(application.dataManager.selectAllPromotion());
+        registerReceiver(mHandleMessageReceiver, new IntentFilter(
+                DISPLAY_MESSAGE_ACTION));
         promotionList.setAdapter(new PromotionListAdapter(promotions, this, location));
         // Initialize the location fields
           System.out.println("Provider " + provider + " has been selected.");
           onLocationChanged(location);
         
+          
     }      
  
     /**
@@ -139,7 +148,7 @@ public class MainActivity extends Activity implements LocationListener {
         @Override
         public void onReceive(Context context, Intent intent) {
             String newMessage = intent.getExtras().getString(EXTRA_MESSAGE);
-            promotions = application.dataManager.selectAllPromotion();
+            promotions = removeExpiredPromsSortAndFilter(application.dataManager.selectAllPromotion());
             // Waking up mobile if it is sleeping
             WakeLocker.acquire(getApplicationContext());
             
@@ -223,27 +232,72 @@ public void onStatusChanged(String provider, int status, Bundle extras) {
 	// TODO Auto-generated method stub
 	
 }
+@Override
+public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.main, menu);
+    return true;
+}
+
+@Override
+public boolean onOptionsItemSelected(MenuItem item) {
+
+	/*
+	 * Because it's onlt ONE option in the menu.
+	 * In order to make it simple, We always start SetPreferenceActivity
+	 * without checking.
+	 */
+	
+	Intent intent = new Intent();
+    intent.setClass(MainActivity.this, com.lastorder.pushnotifications.SetPreferenceActivity.class);
+    startActivityForResult(intent, 0); 
+	
+    return true;
+}
+
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	// TODO Auto-generated method stub
+	//super.onActivityResult(requestCode, resultCode, data);
+	
+	/*
+	 * To make it simple, always re-load Preference setting.
+	 */
+	
+	loadPref();
+	promotions = removeExpiredPromsSortAndFilter(application.dataManager.selectAllPromotion());
+	((PromotionListAdapter)promotionList.getAdapter()).updatePromotions(promotions);
+}
+
+private int distance;
+private void loadPref(){
+	SharedPreferences mySharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+	distance = mySharedPreferences.getInt("distance", 5000);
+	Log.i("act", ""+distance);
 
 }
 
-/*import android.os.Bundle;
-import android.app.Activity;
-import android.view.Menu;
 
-public class MainActivity extends Activity {
+private ArrayList<Promotion> removeExpiredPromsSortAndFilter(ArrayList<Promotion> proms) {
+	for(int x = 0; x < proms.size(); x++) {
+		if(proms.get(x).expiration.getTimeInMillis() - System.currentTimeMillis() < 0) {
+			application.dataManager.deletePromotion(proms.get(x).id);
+			proms.remove(x);
+			continue;
+		} 
+		Location loc = new Location("");
+		loc.setLatitude(proms.get(x).lat);
+		loc.setLongitude(proms.get(x).lon);
+		if(location.distanceTo(loc) > distance) {
+			proms.remove(x);
+		}
+		
+	}
+	
+	Collections.sort(proms, new MyComparator(location));
+	
+	return proms;
+	
+}
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-    }
+}
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-    
-}*/

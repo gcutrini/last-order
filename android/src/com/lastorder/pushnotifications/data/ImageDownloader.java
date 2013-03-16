@@ -79,6 +79,7 @@ public class ImageDownloader {
         resetPurgeTimer();
         Bitmap bitmap = getBitmapFromCache(url);
         myWeakContext = new WeakReference<Context>(context);
+        
         //Log.d(LOG_TAG, "url: " + url);
         
         if (bitmap == null) {
@@ -472,6 +473,7 @@ public class ImageDownloader {
     				f = new File(Environment.getRootDirectory() + ".tmpProms");
     				try {
 						f.createNewFile();
+					
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
