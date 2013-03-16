@@ -89,7 +89,7 @@ public class PromotionListAdapter extends BaseAdapter {
 		Location rest =  new Location("");
 		rest.setLatitude(promotions.get(position).lat);
 		rest.setLongitude(promotions.get(position).lon);
-		holder.distance.setText(myLocation.distanceTo(rest)+"m");
+		holder.distance.setText(Math.round(myLocation.distanceTo(rest))+"m");
 		
 		return convertView;
 	}

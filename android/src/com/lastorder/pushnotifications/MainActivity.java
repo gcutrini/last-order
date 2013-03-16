@@ -1,8 +1,8 @@
 package com.lastorder.pushnotifications;
 
 import static com.lastorder.pushnotifications.CommonUtilities.DISPLAY_MESSAGE_ACTION;
-import static com.lastorder.pushnotifications.CommonUtilities.SENDER_ID;
 import static com.lastorder.pushnotifications.CommonUtilities.EXTRA_MESSAGE;
+import static com.lastorder.pushnotifications.CommonUtilities.SENDER_ID;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +23,9 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.BaseAdapter;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -137,6 +139,17 @@ public class MainActivity extends Activity implements LocationListener {
         // Initialize the location fields
           System.out.println("Provider " + provider + " has been selected.");
           onLocationChanged(location);
+          
+        promotionList.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				// TODO Auto-generated method stub
+				Intent i = new Intent(getApplicationContext(), PromotionDetailedActivity.class);
+				//getApplicationContext().startActivity(i);
+			}
+		});
         
           
     }      
@@ -282,13 +295,15 @@ private ArrayList<Promotion> removeExpiredPromsSortAndFilter(ArrayList<Promotion
 		if(proms.get(x).expiration.getTimeInMillis() - System.currentTimeMillis() < 0) {
 			application.dataManager.deletePromotion(proms.get(x).id);
 			proms.remove(x);
+			x--;
 			continue;
 		} 
 		Location loc = new Location("");
 		loc.setLatitude(proms.get(x).lat);
 		loc.setLongitude(proms.get(x).lon);
-		if(location.distanceTo(loc) > distance) {
+		if(Math.round(location.distanceTo(loc)) > distance) {
 			proms.remove(x);
+			x--;
 		}
 		
 	}
