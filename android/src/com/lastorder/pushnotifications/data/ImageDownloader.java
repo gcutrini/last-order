@@ -64,8 +64,9 @@ import com.lastorder.pushnotifications.R;
 public class ImageDownloader {
     private static final String LOG_TAG = "ImageDownloader";
     private WeakReference<Context> myWeakContext;
-    private ArrayList<String> urls = new ArrayList<String>();
-    private boolean hasSDCard = true;
+
+    private String cacheDir = Environment.getExternalStorageDirectory().getPath() + "/LastOrder/Media/LastOrder Images";
+
     /**
      * Download the specified image from the Internet and binds it to the provided ImageView. The
      * binding is immediate if the image is found in the cache and will be done asynchronously
@@ -79,9 +80,7 @@ public class ImageDownloader {
         resetPurgeTimer();
         Bitmap bitmap = getBitmapFromCache(url);
         myWeakContext = new WeakReference<Context>(context);
-        
-        //Log.d(LOG_TAG, "url: " + url);
-        
+
         if (bitmap == null) {
             bar.setVisibility(0);
             imageView.setVisibility(8);
@@ -117,12 +116,11 @@ public class ImageDownloader {
         }
 
         if (cancelPotentialDownload(url, imageView)) {
-                    BitmapDownloaderTask task = new BitmapDownloaderTask(imageView, bar);
-                    DownloadedDrawable downloadedDrawable = new DownloadedDrawable(task);
-                    imageView.setImageDrawable(downloadedDrawable);
-                    imageView.setMinimumHeight(156);
-                    task.execute(url);
-                    //Log.d(LOG_TAG, "url: " + url);
+            BitmapDownloaderTask task = new BitmapDownloaderTask(imageView, bar);
+            DownloadedDrawable downloadedDrawable = new DownloadedDrawable(task);
+            imageView.setImageDrawable(downloadedDrawable);
+            imageView.setMinimumHeight(156);
+            task.execute(url);
         }
     }
 
@@ -383,12 +381,11 @@ public class ImageDownloader {
      */
     private void addBitmapToCache(String url, Bitmap bitmap, Bitmap resized) {
         if (bitmap != null) {
-        	String name = (hasSDCard ? Environment.getExternalStorageDirectory() : Environment.getRootDirectory()) + "/.tmpProms/" + url.hashCode() +".jpg";
-			String rname = (hasSDCard ? Environment.getExternalStorageDirectory() : Environment.getRootDirectory()) + "/.tmpProms/" + url.hashCode() +"-t.jpg";
+        	String name = cacheDir + "/" + url.hashCode() +".jpg";
+			String rname = cacheDir + "/" + url.hashCode() +"-t.jpg";
 				hasExternalStoragePublicPicture(name);
 				saveToSDCard(bitmap, name,  url.hashCode() +".jpg");
 				saveToSDCard(resized, rname, url.hashCode() +"-t.jpg");
-				urls.add(url);
 				sHardBitmapCache.put(url, resized);
         }
     }
@@ -426,7 +423,7 @@ public class ImageDownloader {
         }
         
         
-        	final String pathName = (hasSDCard ? Environment.getExternalStorageDirectory() : Environment.getRootDirectory()) + "/.tmpProms/" + url.hashCode() +"-t.jpg";
+        	final String pathName = cacheDir + "/" + url.hashCode() +"-t.jpg";
         	final Bitmap bitmap = BitmapFactory.decodeFile(pathName);
         	
         	if(bitmap != null) {
@@ -460,30 +457,6 @@ public class ImageDownloader {
     
     private boolean hasExternalStoragePublicPicture(String name) {
     	
-    	
-    
-    		File f = new File(Environment.getExternalStorageDirectory() + ".tmpProms");
-    		if(!f.exists()) {
-    			try {
-    				f.createNewFile();
-    			} catch (IOException e) {
-    				// TODO Auto-generated catch block
-    				e.printStackTrace();
-    				hasSDCard = false;
-    				f = new File(Environment.getRootDirectory() + ".tmpProms");
-    				try {
-						f.createNewFile();
-					
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-    			}
-    		}
-
-    		
-    		
-    	
 		File file = new File(name);
 		if (file != null) {
 			file.delete();
@@ -506,7 +479,7 @@ public class ImageDownloader {
 		boolean mExternalStorageAvailable = false;
 		boolean mExternalStorageWriteable = false;
 		String state = Environment.getExternalStorageState();
-		if (Environment.MEDIA_MOUNTED.equals(state) || !hasSDCard) {
+		if (Environment.MEDIA_MOUNTED.equals(state)) {
 			mExternalStorageAvailable = mExternalStorageWriteable = true;
 			Log.v(LOG_TAG, "SD Card is available for read and write "
 					+ mExternalStorageAvailable + mExternalStorageWriteable);
@@ -535,8 +508,7 @@ public class ImageDownloader {
 		values.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg");
 		Uri uri = myWeakContext.get().getContentResolver().insert(
 				android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-
-				values);;
+				values);
 
 		try {
 			OutputStream outStream = myWeakContext.get().getContentResolver()
@@ -551,9 +523,6 @@ public class ImageDownloader {
 			e.printStackTrace();
 		} catch(IllegalStateException e) {
 			e.printStackTrace();
-		}
-		if(!nam.contains("-t.jpg")) {
-			bitmap.recycle();
 		}
 	}
 }
