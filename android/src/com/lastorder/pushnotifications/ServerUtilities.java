@@ -28,12 +28,15 @@ public final class ServerUtilities {
      * Register this account/device pair within the server.
      *
      */
-    static void register(final Context context, String name, String email, final String regId) {
+    
+ //String name,
+    
+    static void register(final Context context, String email, final String regId) {
         Log.i(TAG, "registering device (regId = " + regId + ")");
         String serverUrl = SERVER_URL;
         Map<String, String> params = new HashMap<String, String>();
         params.put("regId", regId);
-        params.put("name", name);
+        params.put("name", "");
         params.put("email", email);
  
         long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);

@@ -37,9 +37,9 @@ public class GCMIntentService extends GCMBaseIntentService {
     protected void onRegistered(Context context, String registrationId) {
         Log.i(TAG, "Device registered: regId = " + registrationId);
         displayMessage(context, "Your device registred with GCM");
-        Log.d("NAME", MainActivity.name);
-        ServerUtilities.register(context, android.os.Build.MODEL, MainActivity.email, registrationId);
-       
+//Log.d("NAME", MainActivity.name);
+        ServerUtilities.register(context, MainActivity.email, registrationId);
+        
     }
  
     /**
