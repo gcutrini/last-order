@@ -20,11 +20,12 @@ public class RegisterActivity extends Activity {
     ConnectionDetector cd;
  
     // UI elements
-    EditText txtName;
+    //EditText txtName;
     EditText txtEmail;
  
     // Register button
     Button btnRegister;
+    Button btnMaybeLater;
  
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,10 +58,10 @@ public class RegisterActivity extends Activity {
         
         // Check if regid already presents
         if (regId.equals("")) {
-	        txtName = (EditText) findViewById(R.id.txtName);
+  //txtName = (EditText) findViewById(R.id.txtName);
 	        txtEmail = (EditText) findViewById(R.id.txtEmail);
 	        btnRegister = (Button) findViewById(R.id.btnRegister);
-	 
+	        btnMaybeLater = (Button) findViewById(R.id.btnMaybeLater);
 	        /*
 	         * Click event on Register button
 	         * */
@@ -69,28 +70,48 @@ public class RegisterActivity extends Activity {
 	            @Override
 	            public void onClick(View arg0) {
 	                // Read EditText dat
-	                String name = txtName.getText().toString();
+//String name = txtName.getText().toString();
 	                String email = txtEmail.getText().toString();
-	 
+	                
+	                
 	                // Check if user filled the form
-	                if(name.trim().length() > 0 && email.trim().length() > 0){
+	                if(email.trim().length() > 0){
 	                    // Launch Main Activity
 	                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
 	 
 	                    // Registering user on our server
 	                    // Sending registraiton details to MainActivity
-	                    i.putExtra("name", name);
+//i.putExtra("name", name);
 	                    i.putExtra("email", email);
 	                    startActivity(i);
 	                    finish();
-	                }else{
+	                }else {
 	                    // user doen't filled that data
 	                    // ask him to fill the form
 	                    alert.showAlertDialog(RegisterActivity.this, "Registration Error!", "Please enter your details", false);
 	                }
 	            }
+	     
 	        });
-        } else {
+	        
+	        btnMaybeLater.setOnClickListener(new View.OnClickListener() {
+                
+                @Override
+                public void onClick(View arg0) {
+                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+
+                // Registering user on our server
+                // Sending registraiton details to MainActivity
+//i.putExtra("name", android.os.Build.MODEL);
+                i.putExtra("email", android.os.Build.MODEL);
+                startActivity(i);
+                finish();
+                }
+            });
+	        
+	        
+        } 
+       else {
        	 	Intent i = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(i);
             finish();

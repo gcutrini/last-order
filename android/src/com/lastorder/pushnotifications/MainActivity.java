@@ -44,7 +44,7 @@ public class MainActivity extends Activity implements LocationListener {
     // Connection detector
     ConnectionDetector cd;
  
-    public static String name;
+  // public static String name;
     public static String email;
     private ListView promotionList;
     private ArrayList<Promotion> promotions = new ArrayList<Promotion>();
@@ -73,7 +73,7 @@ public class MainActivity extends Activity implements LocationListener {
         // Getting name, email from intent
         Intent i = getIntent();
  
-        name = i.getStringExtra("name");
+ //name = i.getStringExtra("name");
         email = i.getStringExtra("email");     
  
         // Make sure the device has the proper dependencies.
@@ -110,7 +110,7 @@ public class MainActivity extends Activity implements LocationListener {
                     protected Void doInBackground(Void... params) {
                         // Register on our server
                         // On server creates a new user
-                        ServerUtilities.register(context, name, email, regId);
+                        ServerUtilities.register(context, email, regId);
                         return null;
                     }
  
