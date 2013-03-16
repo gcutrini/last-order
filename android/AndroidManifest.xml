@@ -65,6 +65,8 @@
             	<category android:name="android.intent.category.PREFERENCE" />
         	</intent-filter>
     	</activity>
+    	<activity 
+    	    android:name="com.lastorder.pushnotifications.PromotionDetailedActivity"></activity>
 		<receiver
             android:name="com.google.android.gcm.GCMBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >

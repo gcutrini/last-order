@@ -52,12 +52,13 @@ public class MainActivity extends Activity implements LocationListener {
     private LocationManager locationManager;
     private String provider;
     private Location location;
+    private Context context;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
- 
+        context = this;
         cd = new ConnectionDetector(getApplicationContext());
  
         // Check if Internet present
@@ -147,7 +148,10 @@ public class MainActivity extends Activity implements LocationListener {
 					long arg3) {
 				// TODO Auto-generated method stub
 				Intent i = new Intent(getApplicationContext(), PromotionDetailedActivity.class);
-				//getApplicationContext().startActivity(i);
+				i.putExtra("promotion", promotions.get(arg2));
+				i.putExtra("location", location);
+				
+				context.startActivity(i);
 			}
 		});
         
@@ -301,6 +305,7 @@ private ArrayList<Promotion> removeExpiredPromsSortAndFilter(ArrayList<Promotion
 		Location loc = new Location("");
 		loc.setLatitude(proms.get(x).lat);
 		loc.setLongitude(proms.get(x).lon);
+		Log.i("main", "distance " + Math.round(location.distanceTo(loc)) + " filter " + distance);
 		if(Math.round(location.distanceTo(loc)) > distance) {
 			proms.remove(x);
 			x--;
