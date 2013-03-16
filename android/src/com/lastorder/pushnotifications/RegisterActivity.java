@@ -38,8 +38,7 @@ public class RegisterActivity extends Activity {
         if (!cd.isConnectingToInternet()) {
             // Internet Connection is not present
             alert.showAlertDialog(RegisterActivity.this,
-                    "Internet Connection Error",
-                    "Please connect to working Internet connection", false);
+                    "","Please connect to working Internet connection", false);
             // stop executing code by return
             return;
         }
@@ -88,7 +87,7 @@ public class RegisterActivity extends Activity {
 	                }else {
 	                    // user doen't filled that data
 	                    // ask him to fill the form
-	                    alert.showAlertDialog(RegisterActivity.this, "Registration Error!", "Please enter your details", false);
+	                    alert.showAlertDialog(RegisterActivity.this, "","Please enter your email address", false);
 	                }
 	            }
 	     

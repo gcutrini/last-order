@@ -1,38 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >   
- 
-     <TextView android:layout_width="fill_parent"
-         android:layout_height="wrap_content"
-         android:text="Email :"
-         android:layout_marginLeft="10dip"
-         android:layout_marginRight="10dip"
-         android:layout_marginTop="20dip"/>
+    android:orientation="vertical" 
+    android:id="@+id/background_01"
+    android:background="@drawable/background_activityregister_02"
+    android:gravity="top">
 
-     <EditText android:id="@+id/txtEmail"
-         android:layout_width="fill_parent"
-         android:layout_height="wrap_content"
-         android:layout_margin="10dip"
-         android:layout_marginBottom="20dip"/>
- 
-     <Button android:id="@+id/btnRegister"
-         android:layout_width="fill_parent"
-         android:layout_height="wrap_content"
-         android:text="Register"
-         android:layout_margin="10dip"/>
- 
-     <Button android:id="@+id/btnMaybeLater"
-         android:layout_width="fill_parent"
-         android:layout_height="wrap_content"
-         android:text="Maybe later..."
-         android:layout_margin="10dip"/>
+   
+
+ 	 <EditText
+             android:id="@+id/txtEmail"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:layout_alignParentTop="true"
+             android:layout_centerHorizontal="true"
+             android:layout_margin="10dip"
+             android:layout_marginTop="110dp"
+             android:ems="10" 
+             android:hint="Email"/>
+
+         <Button
+             android:id="@+id/btnMaybeLater"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_centerHorizontal="true"
+             android:layout_alignBaseline="@+id/btnRegister"
+             android:layout_alignBottom="@+id/btnRegister"
+             android:layout_alignRight="@+id/txtEmail"
+             android:layout_margin="10dip"
+             android:layout_marginRight="37dp"
+             android:text="Maybe later" />
+
+         <Button
+             android:id="@+id/btnRegister"
+             android:layout_width="wrap_content"
+             android:layout_centerHorizontal="true"
+             android:layout_height="wrap_content"
+             android:layout_below="@+id/txtEmail"
+             android:layout_margin="10dip"
+             android:layout_marginRight="20dp"
+             android:layout_toLeftOf="@+id/btnMaybeLater"
+             android:text="    Register    " />
+
+</RelativeLayout>
      
-     
-     
-     
-     
-     
-</LinearLayout>
