@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<PreferenceScreen
+       xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:lastorder="http://com.lastorder.pushnotifications"
+       android:key="preference_screen">
+        
+    <PreferenceCategory android:title="Distance">
+        <com.lastorder.pushnotifications.SeekBarPreference
+            android:key="distance"
+                android:title="Distance filter"
+                android:summary="Show promotions that \n are nearer than"
+                android:defaultValue="5000"
+                android:max="30000"
+                lastorder:min="500"
+            lastorder:unitsLeft=""
+                lastorder:unitsRight="m"
+            />
+    </PreferenceCategory>
+    
+</PreferenceScreen>
