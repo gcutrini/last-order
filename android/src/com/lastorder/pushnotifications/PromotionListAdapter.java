@@ -63,7 +63,7 @@ public class PromotionListAdapter extends BaseAdapter {
 			convertView = inflater.inflate(R.layout.promotion_list, null);
 			holder.venue = (TextView)convertView.findViewById(R.id.venue);
 			holder.name = (TextView)convertView.findViewById(R.id.name);
-			holder.description = (TextView)convertView.findViewById(R.id.description);
+			//holder.description = (TextView)convertView.findViewById(R.id.description);
 			holder.image_url = (ImageView)convertView.findViewById(R.id.url_image);
 			holder.address = (TextView)convertView.findViewById(R.id.address);
 			holder.discount = (TextView)convertView.findViewById(R.id.discount);
@@ -79,7 +79,7 @@ public class PromotionListAdapter extends BaseAdapter {
 		
 		holder.venue.setText(promotions.get(position).venue);
 		holder.name.setText(promotions.get(position).name);
-		holder.description.setText(promotions.get(position).description);
+		//holder.description.setText(promotions.get(position).description);
 		holder.address.setText(promotions.get(position).address);
 		holder.discount.setText(promotions.get(position).discount + "%");
 		holder.expiration.setText(DateUtils.formatElapsedTime((promotions.get(position).expiration.getTimeInMillis() - System.currentTimeMillis())/1000));
@@ -97,7 +97,7 @@ public class PromotionListAdapter extends BaseAdapter {
 	private class ViewHolder {
 		TextView venue;
 		TextView name;
-		TextView description;
+		//TextView description;
 		ImageView image_url;
 		TextView discount;
 		TextView distance;
