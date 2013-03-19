@@ -7,7 +7,6 @@ import com.lastorder.pushnotifications.data.ImageDownloader;
 import android.content.Context;
 import android.location.Location;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,14 +22,12 @@ public class PromotionListAdapter extends BaseAdapter {
 	private LayoutInflater inflater;
 	private Context context;
 	private Location myLocation;
-	private long mStartTime;
 	private ImageDownloader imageDownloader;
 	public PromotionListAdapter(ArrayList<Promotion> promos, Context c, Location myLoc) {
 		promotions = promos;
 		context = c;
 		inflater = LayoutInflater.from(context);
 		myLocation = myLoc;
-		mStartTime = System.currentTimeMillis();
 		mHandler.removeCallbacks(mUpdateTimeTask);
 		mHandler.postDelayed(mUpdateTimeTask, 1000);
 		imageDownloader = new ImageDownloader();

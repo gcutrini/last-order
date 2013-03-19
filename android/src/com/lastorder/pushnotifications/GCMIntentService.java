@@ -1,7 +1,5 @@
 package com.lastorder.pushnotifications;
 import java.text.ParseException;
-import java.util.ArrayList;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,8 +8,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.Environment;
+import android.location.Location;
 import android.util.Log;
  
 import com.google.android.gcm.GCMBaseIntentService;
@@ -23,8 +20,9 @@ import static com.lastorder.pushnotifications.CommonUtilities.displayMessage;
 public class GCMIntentService extends GCMBaseIntentService {
  
     private static final String TAG = "GCMIntentService";
-    
+
     LastOrderApplication application;
+    GPSTracker gps;
 
     public GCMIntentService() {
         super(SENDER_ID);
@@ -82,10 +80,33 @@ public class GCMIntentService extends GCMBaseIntentService {
 			}
 	        
 	        application.dataManager.insertPromotion(prom);
+
+	        gps = new GPSTracker(GCMIntentService.this);
 	        
+            // check if GPS enabled
+            if (gps.canGetLocation()) {
+            	Location userLocation = new Location("userLocation");
+            	userLocation.setLatitude(gps.getLatitude());
+            	userLocation.setLongitude(gps.getLongitude());
+
+            	Location promLocation = new Location("promLocation");
+            	promLocation.setLatitude(prom.lat);
+        		promLocation.setLongitude(prom.lon);
+
+        		if (Math.round(userLocation.distanceTo(promLocation)) <= 5000) {
+        	        generateNotification(context, "New promotion within reach.");
+        		} else {
+        	        generateNotification(context, "Promotion received but not within reach.");
+        		}
+
+            } else {
+                // can't get location
+                // GPS or Network is not enabled
+                // Ask user to enable GPS/network in settings
+                gps.showSettingsAlert();
+            }
+
 	        displayMessage(context, message);
-	        // notifies user
-	        generateNotification(context, message);
 	    
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
