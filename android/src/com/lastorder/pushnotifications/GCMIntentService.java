@@ -8,7 +8,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
+import android.preference.PreferenceManager;
 import android.util.Log;
  
 import com.google.android.gcm.GCMBaseIntentService;
@@ -20,7 +22,7 @@ import static com.lastorder.pushnotifications.CommonUtilities.displayMessage;
 public class GCMIntentService extends GCMBaseIntentService {
  
     private static final String TAG = "GCMIntentService";
-
+    
     LastOrderApplication application;
     GPSTracker gps;
 
@@ -35,7 +37,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     protected void onRegistered(Context context, String registrationId) {
         Log.i(TAG, "Device registered: regId = " + registrationId);
         displayMessage(context, "Your device registred with GCM");
-
+        
         ServerUtilities.register(context, MainActivity.email, registrationId); 
     }
  
@@ -58,6 +60,7 @@ public class GCMIntentService extends GCMBaseIntentService {
         String message = intent.getExtras().getString("price");
         application = (LastOrderApplication) getApplication();
 
+    	
         try {
 			JSONObject x = new JSONObject(message);
 			
@@ -93,7 +96,8 @@ public class GCMIntentService extends GCMBaseIntentService {
             	promLocation.setLatitude(prom.lat);
         		promLocation.setLongitude(prom.lon);
 
-        		if (Math.round(userLocation.distanceTo(promLocation)) <= 5000) {
+        		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplication().getApplicationContext());
+        		if (Math.round(userLocation.distanceTo(promLocation)) <= preferences.getInt("distance", 5000)) {
         	        generateNotification(context, "New promotion within reach.");
         		} else {
         	        generateNotification(context, "Promotion received but not within reach.");
