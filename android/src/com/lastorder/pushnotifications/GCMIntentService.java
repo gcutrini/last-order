@@ -84,7 +84,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	        
 	        application.dataManager.insertPromotion(prom);
 
-	        gps = new GPSTracker(GCMIntentService.this);
+	        gps = new GPSTracker(getApplication().getApplicationContext());
 	        
             // check if GPS enabled
             if (gps.canGetLocation()) {
